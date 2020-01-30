@@ -1,4 +1,4 @@
-﻿/*
+/*
 MIT LICENSE
 
 Copyright 2017 Digital Ruby, LLC - http://www.digitalruby.com
@@ -100,6 +100,19 @@ namespace ExchangeSharp
             }
 
             return summaries;
+        }
+
+        public async Task<IEnumerable<string>> GetExchangeSymbolNames()
+        {
+	        var exchangeNames = new List<string>();
+	        await new SynchronizationContextRemover();
+	        JToken token = await MakeCryptowatchRequestAsync("/exchanges");
+	        foreach (JToken prop in token)
+	        {
+		        exchangeNames.Add(prop["symbol"].ConvertInvariant<string>());
+	        }
+
+	        return exchangeNames;
         }
 
         public async Task<ExchangeOrderBook> GetOrderBookAsync(string exchange, string marketSymbol, int maxCount = 100)
