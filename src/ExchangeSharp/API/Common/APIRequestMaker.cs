@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using MihaZupan;
 
 namespace ExchangeSharp
 {
@@ -30,7 +31,7 @@ namespace ExchangeSharp
 		/// Proxy for http requests, reads from HTTP_PROXY environment var by default
 		/// You can also set via code if you like
 		/// </summary>
-		public static WebProxy? Proxy { get; set; }
+		public static IWebProxy? Proxy { get; set; }
 
 		/// <summary>
 		/// Static constructor
@@ -40,14 +41,19 @@ namespace ExchangeSharp
 			var httpProxy = Environment.GetEnvironmentVariable("http_proxy");
 			httpProxy ??= Environment.GetEnvironmentVariable("HTTP_PROXY");
 
-			if (string.IsNullOrWhiteSpace(httpProxy))
+			if (!string.IsNullOrWhiteSpace(httpProxy))
 			{
+				var uri = new Uri(httpProxy);
+				Proxy = new WebProxy(uri);
 				return;
 			}
 
-			var uri = new Uri(httpProxy);
-			Proxy = new WebProxy(uri);
-
+			var socks5Proxy = Environment.GetEnvironmentVariable("socks5_proxy")?.Split(':');
+			socks5Proxy ??= Environment.GetEnvironmentVariable("SOCKS5_PROXY")?.Split(':');
+			if (socks5Proxy?.Length == 2)
+			{
+				Proxy = new HttpToSocks5Proxy(socks5Proxy[0], int.Parse(socks5Proxy[1]));
+			}
 		}
 		internal class InternalHttpWebRequest : IHttpWebRequest
         {
