@@ -217,17 +217,19 @@ namespace ExchangeSharp
         /// <returns>The customer trading fees</returns>
         Task<Dictionary<string, decimal>> GetFeesAync();
 
-        #endregion REST
+        Task<IEnumerable<ExchangeFee>> GetFeesAsync(string marketSymbol = null);
 
-        #region Web Socket
+		#endregion REST
 
-        /// <summary>
-        /// Get all tickers via web socket
-        /// </summary>
-        /// <param name="callback">Callback</param>
-        /// <param name="symbols">Symbols. If no symbols are specified, this will get the tickers for all symbols. NOTE: Some exchanges don't allow you to specify which symbols to return.</param>
-        /// <returns>Web socket, call Dispose to close</returns>
-        Task<IWebSocket> GetTickersWebSocketAsync(Action<IReadOnlyCollection<KeyValuePair<string, ExchangeTicker>>> callback, params string[] symbols);
+		#region Web Socket
+
+		/// <summary>
+		/// Get all tickers via web socket
+		/// </summary>
+		/// <param name="callback">Callback</param>
+		/// <param name="symbols">Symbols. If no symbols are specified, this will get the tickers for all symbols. NOTE: Some exchanges don't allow you to specify which symbols to return.</param>
+		/// <returns>Web socket, call Dispose to close</returns>
+		Task<IWebSocket> GetTickersWebSocketAsync(Action<IReadOnlyCollection<KeyValuePair<string, ExchangeTicker>>> callback, params string[] symbols);
 
         /// <summary>
         /// Get information about trades via web socket

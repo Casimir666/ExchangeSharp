@@ -108,7 +108,9 @@ namespace ExchangeSharp
         protected virtual Task<IEnumerable<MarketCandle>> OnGetCandlesAsync(string marketSymbol, int periodSeconds, DateTime? startDate = null, DateTime? endDate = null, int? limit = null) => throw new NotImplementedException();
         protected virtual Task<Dictionary<string, decimal>> OnGetAmountsAsync() => throw new NotImplementedException();
         protected virtual Task<Dictionary<string, decimal>> OnGetFeesAsync() => throw new NotImplementedException();
-        protected virtual Task<Dictionary<string, decimal>> OnGetAmountsAvailableToTradeAsync() => throw new NotImplementedException();
+		protected virtual Task<IEnumerable<ExchangeFee>> OnGetFeesAsync(string marketSymbol) => throw new NotImplementedException();
+
+		protected virtual Task<Dictionary<string, decimal>> OnGetAmountsAvailableToTradeAsync() => throw new NotImplementedException();
         protected virtual Task<ExchangeOrderResult> OnPlaceOrderAsync(ExchangeOrderRequest order) => throw new NotImplementedException();
         protected virtual Task<ExchangeOrderResult[]> OnPlaceOrdersAsync(params ExchangeOrderRequest[] order) => throw new NotImplementedException();
         protected virtual Task<ExchangeOrderResult> OnGetOrderDetailsAsync(string orderId, string? marketSymbol = null) => throw new NotImplementedException();
@@ -706,6 +708,10 @@ namespace ExchangeSharp
             return await Cache.CacheMethod(MethodCachePolicy, async () => await OnGetFeesAsync(), nameof(GetFeesAync));
         }
 
+        public virtual async Task<IEnumerable<ExchangeFee>> GetFeesAsync(string marketSymbol = null)
+        {
+	        return await Cache.CacheMethod(MethodCachePolicy, async () => await OnGetFeesAsync(marketSymbol), nameof(GetFeesAsync));
+        }
         /// <summary>
         /// Get amounts available to trade, symbol / amount dictionary
         /// </summary>

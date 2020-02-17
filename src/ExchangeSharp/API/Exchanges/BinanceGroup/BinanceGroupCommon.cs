@@ -1168,5 +1168,26 @@ namespace ExchangeSharp.BinanceGroup
 			var listenKey = response["listenKey"].ToStringInvariant();
 			return listenKey;
 		}
+
+		protected override async Task<IEnumerable<ExchangeFee>> OnGetFeesAsync(string marketSymbol)
+		{
+			var result = new List<ExchangeFee>();
+			Dictionary<string, object> payload = await GetNoncePayloadAsync();
+			if (!string.IsNullOrEmpty(marketSymbol))
+			{
+				payload["symbol"] = marketSymbol;
+			}
+			var response = await MakeJsonRequestAsync<JToken>("/tradeFee.html", WithdrawalUrlPrivate, payload, "GET");
+			var tradingFees = response?["tradeFee"];
+			if (!(tradingFees is null))
+			{
+				foreach (JToken token in tradingFees)
+				{
+					result.Add(new ExchangeFee(token["symbol"].ToStringInvariant(), token["maker"].ConvertInvariant<decimal>(), token["taker"].ConvertInvariant<decimal>()));
+				}
+			}
+
+			return result;
+		}
 	}
 }
